@@ -1,0 +1,45 @@
+<html> <head>
+    <meta charset="utf-8" />
+
+    <script type="text/javascript" src="main.js"></script>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body onload="init(); draw();" onresize="draw();">
+    <div class="main-container">
+        <div class="header" id="header_container">
+        </div>
+        <div class="gallery" id="lobjet_pane">
+            <canvas id='photo' onclick="advance();" oncontextmenu="return false;"> </canvas>
+        </div>
+        <div class="footer">
+            <div>
+                <span id="size"></span> <span id="filename"></span>
+            </div>
+        </div>
+    </div>
+    <canvas id='backing' hidden></canvas>
+    <!--
+
+
+    <table style="width: 100%; height: 100%;">
+        <tr class="headfoot">
+            <td>&nbsp;</td>
+        </tr>
+        <tr class='photo'>
+            <td class='photo' id='lobjet_pane' onwheel="wheel">
+                <canvas id='photo' onclick="advance();" oncontextmenu="return false;"> </canvas>
+            </td>
+        </tr>
+        <tr class="headfoot">
+            <td>
+                <span id="size"></span>
+                <span id="filename"></span>        
+            </td>
+        </tr>
+    </table>
+    <canvas id='backing' hidden></canvas>
+        -->
+</body>
+
+</html>
