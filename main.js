@@ -1,5 +1,3 @@
-n
-
 var images = [
     "SI_P_0008_001_20191222_140913.jpg",
     "SI_P_0008_001_20191222_141307.jpg",
@@ -23,7 +21,26 @@ var images = [
     "SI_P_0017_017_20191202_201211.jpg",
 ];
 
+//
+// Thumbnail properties
+//
 const G_THUMBNAIL_HEIGHT = 160.0;
+var G_THUMBNAIL_INACTIVE_STYLE = {
+    'box-shadow':    '5px 5px 4px #888',
+    'border':        '1px solid #bbb',
+    'border-radius': '8px',
+    'margin':        '4px',
+    'opacity':       '100%',
+    'filter':        '',
+};
+var G_THUMBNAIL_ACTIVE_STYLE = {
+    'box-shadow':    '5px 5px 4px #888',
+    'border':        '1px solid red',
+    'border-radius': '8px',
+    'margin':        '4px',
+    'opacity':       '75%',
+    'filter':        'brightness(75%)',
+};
 
 var thumbs = [];
 
@@ -38,8 +55,7 @@ async function create_thumbnails() {
         header_container.appendChild(divbox);
         thumbs.push(canvas);
     }
-    var l = Array.from(header_container.getElementsByTagName('CANVAS'));
-    l.forEach(canvas => {
+    Array.from(header_container.getElementsByTagName('CANVAS')).forEach(canvas => {
         var image = new Image();
         var ctx = canvas.getContext('2d');
         image.onload = function () {
@@ -48,10 +64,9 @@ async function create_thumbnails() {
 //            scale = 160.0 / image.height;
             canvas.width = image.width * scale;
             canvas.height = image.height * scale;
-            canvas.style.boxShadow = '5px 5px 4px #888';
-            canvas.style.border = '1px solid #bbb';
-            canvas.style.borderRadius = '8px';
-            canvas.style.margin = '4px';
+            Object.keys(G_THUMBNAIL_INACTIVE_STYLE).forEach(attr => {
+                canvas.style[attr] = G_THUMBNAIL_INACTIVE_STYLE[attr];
+            });
             canvas.addEventListener('click', event => {
                 set_current_index(parseInt(canvas.dataset.imageNumber));
                 draw();
@@ -72,58 +87,82 @@ var current_index = null;
 var rotation = 0;
 
 function set_current_index(new_index) {
-    if (new_index == current_index) { return; }
     if (current_index !== null) {
+        if (new_index == current_index) {
+            return;
+        }
         canvas = thumbs[current_index];
-        canvas.style.boxShadow = '5px 5px 4px #888';
-        canvas.style.border = '1px solid #bbb';
-        canvas.style.borderRadius = '8px';
-        canvas.style.margin = '4px';
-        canvas.style.opacity = '100%';
-        canvas.style.filter = '';
+        Object.keys(G_THUMBNAIL_INACTIVE_STYLE).forEach(attr => {
+            canvas.style[attr] = G_THUMBNAIL_INACTIVE_STYLE[attr];
+        });
     }
     current_index = new_index;
-    thumbs[current_index].style.border = '1px solid red';
-    thumbs[current_index].style.opacity = '75%';
-    thumbs[current_index].style.filter = 'brightness(75%)';
-    thumbs[current_index].scrollIntoView();
-
+    Object.keys(G_THUMBNAIL_ACTIVE_STYLE).forEach(attr => {
+        thumbs[current_index].style[attr] = G_THUMBNAIL_ACTIVE_STYLE[attr];
+    });
+    thumbs[current_index].scrollIntoView({behavior: 'smooth'});
 }
 
-function lobjet_touchstart(e) {
-    switch (e.touches.length) {
-        case 1: 
-        case 2:
-        case 3: handle_touch(e); break;
-        default: break;
-    }
-}
-
-function lobjet_touchmove(e) {
-
-}
-
-function lobjet_touchcancel(e) {
-
-}
-
-function lobjet_touchend(e) {
-
-}
+//
+// "lobjet" -> "l'objet d'art"
+// and now you know
+//
 
 function init() {
+
+    let lobjet_down_x;
+    let lobjet_pane;
+
+    function lobjet_pointerdown(e) {
+        if (!e.isPrimary) { returh; }
+        if ((e.buttons & 1) == 1) {
+            lobjet_down_x = e.clientX;
+        }
+        console.log(e);
+    }
+    
+    function lobjet_pointermove(e) {
+        if (!e.isPrimary) { returh; }
+        if ((e.buttons & 1) == 1) {
+            console.log(e.clientX - lobjet_down_x);
+            lobjet_pane.style.left = e.clientX - lobjet_down_x + 'px';
+        }
+    }
+    
+    function lobjet_pointerup(e) {
+        if (!e.isPrimary) { returh; }
+        if ((e.buttons & 1) == 0) {
+            lobjet_pane.style.left = '0px';
+        }
+        console.log(e);
+    }
+    
+    function lobjet_pointerout(e) {
+        if (!e.isPrimary) { returh; }
+        if ((e.buttons & 1) == 1) {
+            if (e.clientX - lobjet_down_x > 0) {
+                advance();
+            } else {
+                retreat();
+            }
+            lobjet_pane.style.left = '0px';
+        }
+        console.log(e);
+    }
+    
+    
     el = document.getElementById('photo');
     el.onwheel = wheel;
     document.onkeydown = keydown;
 
     //
-    // Set up swipe handlers
+    // Set up pointer/swipe/etc handlers
     //
     lobjet_pane = document.getElementById('lobjet_pane');
-    lobjet_pane.addEventListener('touchstart', lobjet_touchstart, false);
-    lobjet_pane.addEventListener('touchmove', lobjet_touchmove, false);
-    lobjet_pane.addEventListener('touchcancel', lobjet_touchcancel, false);
-    lobjet_pane.addEventListener('touchend', lobjet_touchend, false);
+    lobjet_pane.addEventListener('pointerdown', lobjet_pointerdown, false);
+    lobjet_pane.addEventListener('pointermove', lobjet_pointermove, false);
+    lobjet_pane.addEventListener('pointerup', lobjet_pointerup, false);
+    lobjet_pane.addEventListener('pointerout', lobjet_pointerout, false);
 
     create_thumbnails();
     set_current_index(0);
