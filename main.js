@@ -1,25 +1,24 @@
 var images = [
-    "SI_P_0008_001_20191222_140913.jpg",
-    "SI_P_0008_001_20191222_141307.jpg",
-    "SI_P_0008_002_20191222_141003.jpg",
-    "SI_P_0008_002_20191222_143024.jpg",
-    "SI_P_0008_003_20191222_141032.jpg",
-    "SI_P_0008_005_20191222_142319.jpg",
-    "SI_P_0008_006_20191222_142416.jpg",
-    "SI_P_0008_007_20191222_141018.jpg",
-    "SI_P_0008_008_20191222_140927.jpg",
-    "SI_P_0017_001_20191202_192307.jpg",
-    "SI_P_0017_002_20191202_192311.jpg",
-    "SI_P_0017_003_20191202_192341.jpg",
-    "SI_P_0017_005_20191202_193022.jpg",
-    "SI_P_0017_006_20191202_193826.jpg",
-    "SI_P_0017_007_20191202_194027.jpg",
-    "SI_P_0017_009_20191202_194917.jpg",
-    "SI_P_0017_010_20191202_194941.jpg",
-    "SI_P_0017_014_20191202_201123.jpg",
-    "SI_P_0017_015_20191202_201152.jpg",
-    "SI_P_0017_017_20191202_201211.jpg",
+// BEGIN OBJET FILES
+    "SI_P_0016_001_20050831_013448.jpg",
+    "SI_P_0016_002_20050831_014300.jpg",
+    "SI_P_0016_003_20050831_030212.jpg",
+    "SI_P_0016_005_20050901_004742.jpg",
+    "SI_P_0016_004_20050831_064300.jpg",
+    "SI_P_0016_007_20050901_023232.jpg",
+    "SI_P_0016_008_20050901_031232.jpg",
+    "SI_P_0016_009_20050901_032102.jpg",
+    "SI_P_0016_006_20050901_005712.jpg",
+    "SI_P_0016_010_20050901_042512.jpg",
+    "SI_P_0016_011_20050901_110532.jpg",
+    "SI_P_0016_012_20050902_001618.jpg",
+    "SI_P_0016_013_20050902_021316.jpg",
+    "SI_P_0016_014_20050902_092920.jpg",
+    "SI_P_0016_015_20050904_021808.jpg",
+    "SI_P_0016_016_20050904_033208.jpg",
+// END OBJET FILES
 ];
+var gallery_title = 'Trip Snapshots';
 
 //
 // Thumbnail properties
@@ -61,7 +60,6 @@ async function create_thumbnails() {
         image.onload = function () {
             var scale;
             scale = G_THUMBNAIL_HEIGHT / image.height;
-//            scale = 160.0 / image.height;
             canvas.width = image.width * scale;
             canvas.height = image.height * scale;
             Object.keys(G_THUMBNAIL_INACTIVE_STYLE).forEach(attr => {
@@ -164,6 +162,9 @@ function init() {
     lobjet_pane.addEventListener('pointerup', lobjet_pointerup, false);
     lobjet_pane.addEventListener('pointerout', lobjet_pointerout, false);
 
+    let gallery_title_el = document.getElementById('gallery-title');
+    gallery_title_el.innerHTML =
+        '<span style="font-size: larger">' + gallery_title + '</span>';
     create_thumbnails();
     set_current_index(0);
 }
@@ -204,6 +205,16 @@ function rotate() {
 function torate() {
 
 }
+//
+// Current plan here is:
+//   Assume that images will be saved directly and not resized or re-encoded etc
+//   Data like IP address, datetime, etc., will be encoded as LSB in a central-ish area of the image
+//   -- This could be varied by image!
+//   The steg data will include a "leader" of LSBs with a particular signature that will identify
+//     the start of the data
+//   Possibly a user name could be recorded, if we can persuade the user to "log in" with a username 
+//     and a password, thence stored on the browser
+//
 function steg(canvas) {
     var x = canvas.width / 2;
     var y = canvas.height / 2;
