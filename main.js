@@ -18,7 +18,6 @@ var images = [
     "SI_P_0016_016_20050904_033208.jpg",
 // END OBJET FILES
 ];
-
 var gallery_title = 'Trip Snapshots';
 
 //
@@ -45,9 +44,9 @@ var G_THUMBNAIL_ACTIVE_STYLE = {
 var thumbs = [];
 
 async function create_thumbnails() {
-    var header_container = document.getElementById('header_container');
+    let header_container = document.getElementById('header_container');
     for (let i = 0; i < images.length; i++) {
-        var canvas = document.createElement("canvas");
+        let canvas = document.createElement("canvas");
         canvas.dataset.imageNumber = i;
         canvas.dataset.imageSrc = images[i];
         divbox = document.createElement('DIV');
@@ -56,11 +55,10 @@ async function create_thumbnails() {
         thumbs.push(canvas);
     }
     Array.from(header_container.getElementsByTagName('CANVAS')).forEach(canvas => {
-        var image = new Image();
-        var ctx = canvas.getContext('2d');
+        let image = new Image();
+        let ctx = canvas.getContext('2d');
         image.onload = function () {
-            var scale;
-            scale = G_THUMBNAIL_HEIGHT / image.height;
+            let scale = G_THUMBNAIL_HEIGHT / image.height;
             canvas.width = image.width * scale;
             canvas.height = image.height * scale;
             Object.keys(G_THUMBNAIL_INACTIVE_STYLE).forEach(attr => {
@@ -149,9 +147,8 @@ function init() {
         console.log(e);
     }
     
-    
-    el = document.getElementById('photo');
-    el.onwheel = wheel;
+    let photo_el = document.getElementById('photo');
+    photo_el.onwheel = wheel;
     document.onkeydown = keydown;
 
     //
@@ -171,7 +168,7 @@ function init() {
 }
 
 function advance() {
-    i = 1 + current_index;
+    let i = 1 + current_index;
     if (i >= images.length) {
         i = 0;
     }
@@ -179,7 +176,7 @@ function advance() {
     draw();
 }
 function retreat() {
-    i = -1 + current_index;
+    let i = -1 + current_index;
     if (i < 0) {
         i = images.length - 1;
     }
@@ -201,10 +198,10 @@ function keydown(event) {
     }
 }
 function rotate() {
-
+    // NYI
 }
 function torate() {
-
+    // NYI
 }
 //
 // Current plan here is:
@@ -217,10 +214,10 @@ function torate() {
 //     and a password, thence stored on the browser
 //
 function steg(canvas) {
-    var x = canvas.width / 2;
-    var y = canvas.height / 2;
-    var ctx = canvas.getContext('2d');
-    var image_data = ctx.getImageData(x, y, 100, 1);
+    let x = canvas.width / 2;
+    let y = canvas.height / 2;
+    let ctx = canvas.getContext('2d');
+    let image_data = ctx.getImageData(x, y, 100, 1);
     for (let i = 0; i < 100; i++) {
         image_data.data[i * 4] &= 240;
         image_data.data[i * 4 + 1] &= 240;
@@ -231,33 +228,34 @@ function steg(canvas) {
 }
 
 function draw(image_number = null) {
-
     //
     // Draw into a hidden canvas first to avoid flicker
     //
-    var backing_canvas = document.getElementById('backing');
-    var canvas = document.getElementById('photo');
+    let backing_canvas = document.getElementById('backing');
+    let canvas = document.getElementById('photo');
+    let backing_context;
     if (backing_canvas.getContext) {
-        var backing_ctx = backing_canvas.getContext('2d');
+        backing_ctx = backing_canvas.getContext('2d');
     }
     photo_box = document.getElementById('lobjet_pane');
     backing_canvas.width = photo_box.clientWidth;
     backing_canvas.height = photo_box.clientHeight;
-    var image = new Image();
+    let image = new Image();
 
     image.onload = function () {
-        var scale = Math.min(backing_canvas.width / image.width, backing_canvas.height / image.height);
-        var h_pad = (backing_canvas.width - image.width * scale) / 2.0;
-        var v_pad = (backing_canvas.height - image.height * scale) / 2.0;
+        let scale = Math.min(backing_canvas.width / image.width, backing_canvas.height / image.height);
+        let h_pad = (backing_canvas.width - image.width * scale) / 2.0;
+        let v_pad = (backing_canvas.height - image.height * scale) / 2.0;
 
-        size = document.getElementById('size');
+        let size = document.getElementById('size');
         size.innerHTML = '' +
             image.width + ' x ' + image.height;
         filename = document.getElementById('filename');
 
         // Planning to use data URLs to create secure-ish links to stegged images.
         // This seems like it will work, but takes a few seconds or more to do so
-        // it will have to be done on request for a download.
+        // it will have to be done on request for a download, or more likely, in the
+        // background.
         //
         // data_url = canvas.toDataURL();
 
@@ -277,8 +275,9 @@ function draw(image_number = null) {
         backing_ctx.scale(scale, scale);
         backing_ctx.drawImage(image, 0, 0);
         backing_ctx.restore();
+        let ctx;
         if (canvas.getContext) {
-            var ctx = canvas.getContext('2d');
+            ctx = canvas.getContext('2d');
         }
         canvas.width = photo_box.clientWidth;
         canvas.height = photo_box.clientHeight;
