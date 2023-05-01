@@ -18,6 +18,7 @@ var images = [
     "SI_P_0016_016_20050904_033208.jpg",
 // END OBJET FILES
 ];
+
 var gallery_title = 'Trip Snapshots';
 
 //
