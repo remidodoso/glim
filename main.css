@@ -52,7 +52,7 @@ canvas.photo {
 
 }
 
-div.header {
+div.carousel {
     display: flex;
     flex-direction: row;
     flex-grow: 0;

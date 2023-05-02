@@ -41,20 +41,28 @@ var G_THUMBNAIL_ACTIVE_STYLE = {
     'filter':        'brightness(75%)',
 };
 
+//
+// It would be cleaner if this wasn't a global, but thread safety isn't an issue as
+// it's initialized in a single loop and is read-only from there.
+//
 var thumbs = [];
 
+//
+// Nothing happening during this initialization depends on user interaction, so we
+// run it asynchronously and let other stuff happen in the meanwhile.
+//
 async function create_thumbnails() {
-    let header_container = document.getElementById('header_container');
+    let carousel_container = document.getElementById('carousel-container');
     for (let i = 0; i < images.length; i++) {
         let canvas = document.createElement("canvas");
         canvas.dataset.imageNumber = i;
         canvas.dataset.imageSrc = images[i];
-        divbox = document.createElement('DIV');
+        let divbox = document.createElement('DIV');
         divbox.appendChild(canvas);
-        header_container.appendChild(divbox);
+        carousel_container.appendChild(divbox);
         thumbs.push(canvas);
-    }
-    Array.from(header_container.getElementsByTagName('CANVAS')).forEach(canvas => {
+    }  
+    Array.from(carousel_container.getElementsByTagName('CANVAS')).forEach(canvas => {
         let image = new Image();
         let ctx = canvas.getContext('2d');
         image.onload = function () {
